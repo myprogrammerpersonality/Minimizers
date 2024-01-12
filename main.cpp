@@ -2,59 +2,53 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <algorithm>
+#include <unordered_map>
 
-const int kmerSize = 3;
-const int windowSize = 5;
-const std::string filename = "./input.txt";
+const std::string input_file = "./input_100.txt";
+const int kmer_size = 3;
+const int window_size = 5;
 
-// Function to read the DNA sequence from a file
-std::string readDNASequence(const std::string &filename) {
-    std::ifstream file(filename);
-    std::string sequence;
-    if (file.is_open()) {
-        file >> sequence;
-    } else {
-        std::cerr << "Unable to open file\n";
+
+// Simple hash function for k-mers
+unsigned long hash_kmer(const std::string &kmer) {
+    unsigned long hash = 0;
+    for (char c : kmer) {
+        hash = hash * 31 + c;
     }
-    return sequence;
-}
-
-// Function to generate all k-mers from the DNA sequence
-std::vector<std::string> generateKmers(const std::string &sequence, int k) {
-    std::vector<std::string> kmers;
-    for (size_t i = 0; i <= sequence.size() - k; ++i) {
-        kmers.push_back(sequence.substr(i, k));
-    }
-    return kmers;
-}
-
-// Function to find minimizers from a vector of k-mers
-std::vector<std::string> findMinimizers(const std::vector<std::string> &kmers, int windowSize) {
-    std::vector<std::string> minimizers;
-    for (size_t i = 0; i <= kmers.size() - windowSize; ++i) {
-        auto windowBegin = kmers.begin() + i;
-        auto windowEnd = windowBegin + windowSize;
-        auto minKmer = std::min_element(windowBegin, windowEnd);
-        minimizers.push_back(*minKmer);
-    }
-    return minimizers;
+    return hash;
 }
 
 int main() {
-    // Step 1: Reading the DNA sequence
-    std::string dnaSequence = readDNASequence(filename);
+    std::ifstream file(input_file);
+    std::string dna_sequence;
+    if (file.is_open()) {
+        std::getline(file, dna_sequence);
+        file.close();
+    } else {
+        std::cerr << "Error opening file" << std::endl;
+        return 1;
+    }
 
-    // Step 2 & 3: Generating k-mers and applying random ordering
-    std::vector<std::string> kmers = generateKmers(dnaSequence, kmerSize);
-    std::random_shuffle(kmers.begin(), kmers.end());
+    std::unordered_map<std::string, unsigned long> kmer_hashes;
 
-    // Step 4: Finding minimizers
-    std::vector<std::string> minimizers = findMinimizers(kmers, windowSize);
+    // Find minimizers
+    for (size_t i = 0; i <= dna_sequence.length() - window_size; ++i) {
+        unsigned long min_hash = ULONG_MAX;
+        std::string min_kmer;
+        for (size_t j = i; j <= i + window_size - kmer_size; ++j) {
+            std::string kmer = dna_sequence.substr(j, kmer_size);
+            unsigned long hash = hash_kmer(kmer);
+            if (hash < min_hash) {
+                min_hash = hash;
+                min_kmer = kmer;
+            }
+        }
+        kmer_hashes[min_kmer] = min_hash;
+    }
 
-    // Step 5: Outputting the first ten minimizers
-    for (int i = 0; i < 10 && i < minimizers.size(); ++i) {
-        std::cout << minimizers[i] << std::endl;
+    // Output minimizers
+    for (const auto &pair : kmer_hashes) {
+        std::cout << "Minimizer: " << pair.first << " Hash: " << pair.second << std::endl;
     }
 
     return 0;

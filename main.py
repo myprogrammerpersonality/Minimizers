@@ -3,7 +3,8 @@
 
 import random
 
-DNA_SIZE = 100_000
+DNA_SIZE = 100
+OUTPUT_FILE = f'input_{DNA_SIZE}.txt'
 
 
 # generate a random DNA sequence of length
@@ -13,7 +14,7 @@ def generate_sequence(length):
 
 # write the sequence to the file input.txt
 def write_sequence(sequence):
-    with open('input.txt', 'w') as f:
+    with open(OUTPUT_FILE, 'w') as f:
         f.write(sequence)
 
 
