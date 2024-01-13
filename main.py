@@ -3,7 +3,7 @@
 
 import random
 
-DNA_SIZE = 100
+DNA_SIZE = 1_000_000
 OUTPUT_FILE = f'input_{DNA_SIZE}.txt'
 
 

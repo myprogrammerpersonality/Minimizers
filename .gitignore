@@ -1,1 +1,6 @@
 *.exe
+*.txt
+.vscode
+minimizer
+minimizer.exe
+minimizer.out

@@ -1,12 +1,10 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>
-#include <unordered_map>
 
 const std::string input_file = "./input_100.txt";
-const int kmer_size = 3;
-const int window_size = 5;
+const int kmer_size = 1;
+const int window_size = 2;
 
 
 // Simple hash function for k-mers
@@ -29,8 +27,6 @@ int main() {
         return 1;
     }
 
-    std::unordered_map<std::string, unsigned long> kmer_hashes;
-
     // Find minimizers
     for (size_t i = 0; i <= dna_sequence.length() - window_size; ++i) {
         unsigned long min_hash = ULONG_MAX;
@@ -43,12 +39,7 @@ int main() {
                 min_kmer = kmer;
             }
         }
-        kmer_hashes[min_kmer] = min_hash;
-    }
-
-    // Output minimizers
-    for (const auto &pair : kmer_hashes) {
-        std::cout << "Minimizer: " << pair.first << " Hash: " << pair.second << std::endl;
+        std::cout << "Minimizer: " << min_kmer << " Hash: " << min_hash << std::endl;
     }
 
     return 0;
